@@ -7,16 +7,17 @@ import java.util.stream.Stream;
 
 class AuthorizationSystemTest {
 
-    private static Stream<Arguments> loginsAndPasswords() {
-        return Stream.of(
-                Arguments.of("test", "test"),
-                Arguments.of("test", "password"));
-    }
-
+    //параметры указываются в статичных методах, возвращающих Stream<Arguments>
     private static Stream<Arguments> users() {
         return Stream.of(
                 Arguments.of(new User("test", "test")),
                 Arguments.of(new User("someLogin", "P@ssw0rd")));
+    }
+
+    private static Stream<Arguments> loginsAndPasswords() {
+        return Stream.of(
+                Arguments.of("test", "test"),
+                Arguments.of("test", "password"));
     }
 
     private static Stream<Arguments> passwords() {
@@ -28,6 +29,7 @@ class AuthorizationSystemTest {
                 Arguments.of("P@ssw0rd"));
     }
 
+    //источник, откуда тесты будут брать параметры указывается с помощью аннотации @MethodSource("источник")
     @ParameterizedTest
     @MethodSource("users")
     void tryAuthorize(User user){
