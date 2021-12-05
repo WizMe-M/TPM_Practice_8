@@ -6,26 +6,28 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-class AuthorizationSystemTest {
+class RegistrationSystemTest {
+    RegistrationSystem system;
 
     @BeforeEach
-    public void writeBefore(){
+    public void writeBefore() {
         System.out.println("Начинаю процесс авторизации...");
+        system = new RegistrationSystem();
     }
 
     //параметры указываются в статичных методах, возвращающих Stream<Arguments>
     private static Stream<Arguments> users() {
         return Stream.of(
                 Arguments.of(new User("test", "test")),
-                Arguments.of(new User("P@ssw0rd", "P@ssw0rd")),
+                Arguments.of(new User("sample", "P@ssw0rd")),
                 Arguments.of(new User("example", "test_password")),
                 Arguments.of(new User("someLogin", "P@ssw0rd")));
     }
 
-    private static Stream<Arguments> loginsAndPasswords() {
+    private static Stream<Arguments> logins() {
         return Stream.of(
-                Arguments.of("test", "test"),
-                Arguments.of("test", "password"));
+                Arguments.of("test"),
+                Arguments.of("unique"));
     }
 
     private static Stream<Arguments> passwords() {
@@ -41,25 +43,21 @@ class AuthorizationSystemTest {
     //источник, откуда тесты будут брать параметры указывается с помощью аннотации @MethodSource("источник")
     @ParameterizedTest
     @MethodSource("users")
-    void tryAuthorize(User user){
+    void tryAuthorize(User user) {
         boolean actual;
-        AuthorizationSystem system;
 
-        system = new AuthorizationSystem();
-        actual = system.tryAuthorize(user);
+        actual = system.tryRegister(user);
 
         Assertions.assertTrue(actual);
-        System.out.println("Авторизация успешна. Пользователь создан");
+        System.out.println("Регистрация успешна. Пользователь создан");
     }
 
     @ParameterizedTest
-    @MethodSource("loginsAndPasswords")
-    void checkLogin(String login, String password) {
+    @MethodSource("logins")
+    void checkLogin(String login) {
         boolean actual;
-        AuthorizationSystem system;
 
-        system = new AuthorizationSystem();
-        actual =  system.checkLogin(login, password);
+        actual = system.checkLogin(login);
 
         Assertions.assertTrue(actual, "Логин и пароль совпали!");
         System.out.println("Логин прошел тестирование");
@@ -69,10 +67,8 @@ class AuthorizationSystemTest {
     @MethodSource("passwords")
     void checkPassword(String password) {
         int expected, actual;
-        AuthorizationSystem system;
 
         expected = 5;
-        system = new AuthorizationSystem();
         actual = system.checkPassword(password);
 
         Assertions.assertEquals(expected, actual, "Оценка пароля не соответствует ожидаемой");
